@@ -1,8 +1,8 @@
-﻿using ConstruAppAPI.Models;
+﻿using ConstruAppAPI.DTOs;
 namespace ConstruAppAPI.Services.Interfaces
 {
     public interface ICategoryService
     {
-        Task<List<Category>> ListCategoriesAsync();
+        Task<List<CategoryDTO>> ListCategoriesAsync();
     }
 }

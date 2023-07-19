@@ -1,5 +1,4 @@
 ﻿using ConstruAppAPI.Models;
-using ConstruAppAPI.Pagination;
 
 namespace ConstruAppAPI.Repository.Interfaces
 {

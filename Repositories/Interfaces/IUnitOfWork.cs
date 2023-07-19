@@ -2,8 +2,11 @@
 {
     public interface IUnitOfWork
     {
-        IProductRepository ProductRepository { get; }
         ICategoryRepository CategoryRepository { get; }
+        IProductRepository ProductRepository { get; }
+        IPurchaseOrderRepository PurchaseOrderRepository { get; }
+        IPurchaseOrderItemRepository PurchaseOrderItemRepository { get; }
+        IShoppingCartRepository ShoppingCartRepository  { get; }
         IUserAdminRepository UserAdminRepository { get; }
         IUserClientRepository UserClientRepository { get; }
         IUserSellerRepository UserSellerRepository { get; }

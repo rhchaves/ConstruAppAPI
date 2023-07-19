@@ -2,7 +2,7 @@
 
 namespace ConstruAppAPI.Repository.Interfaces
 {
-    public interface IUserSellerRepository : IRepository<UserSeller>
+    public interface IShoppingCartRepository : IRepository<ShoppingCart>
     {
 
     }
