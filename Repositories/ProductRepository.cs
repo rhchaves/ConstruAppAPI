@@ -1,14 +1,11 @@
-﻿using ConstruAppAPI.Context;
-using ConstruAppAPI.Models;
-using ConstruAppAPI.Pagination;
+﻿using ConstruAppAPI.Models;
 using ConstruAppAPI.Repository.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace ConstruAppAPI.Repository
 {
     public class ProductRepository : Repository<Product>, IProductRepository
     {
-        public ProductRepository(ConstruAppDbContext context) : base(context)
+        public ProductRepository(ModelContext context) : base(context)
         {
         }
 

@@ -4,29 +4,30 @@ namespace ConstruAppAPI.Models
 {
     public partial class ModelContext : DbContext
     {
-        public ModelContext()
+        public ModelContext(DbContextOptions<ModelContext> options) : base(options)
         {
         }
 
-        public ModelContext(DbContextOptions<ModelContext> options)
-            : base(options)
-        {
-        }
-
-        public virtual DbSet<Category> Categories { get; set; } = null!;
-        public virtual DbSet<Product> Products { get; set; } = null!;
-        public virtual DbSet<PurchaseOrder> PurchaseOrders { get; set; } = null!;
-        public virtual DbSet<PurchaseOrderItem> PurchaseOrderItems { get; set; } = null!;
-        public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; } = null!;
-        public virtual DbSet<UserAdmin> UserAdmins { get; set; } = null!;
-        public virtual DbSet<UserClient> UserClients { get; set; } = null!;
-        public virtual DbSet<UserSeller> UserSellers { get; set; } = null!;
+        public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
+        public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
+        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
+        public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
+        public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
+        public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
+        public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<PurchaseOrder> PurchaseOrders { get; set; }
+        public virtual DbSet<PurchaseOrderItem> PurchaseOrderItems { get; set; }
+        public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public virtual DbSet<UserAdmin> UserAdmins { get; set; }
+        public virtual DbSet<UserClient> UserClients { get; set; }
+        public virtual DbSet<UserSeller> UserSellers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                // #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseOracle("User Id=CONSTRUAPP;Password=construapp;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XEPDB1)))");
             }
         }
@@ -36,14 +37,109 @@ namespace ConstruAppAPI.Models
             modelBuilder.HasDefaultSchema("CONSTRUAPP")
                 .UseCollation("USING_NLS_COMP");
 
+            modelBuilder.Entity<AspNetRole>(entity =>
+            {
+                entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
+                    .IsUnique();
+
+                entity.Property(e => e.Name).HasMaxLength(256);
+
+                entity.Property(e => e.NormalizedName).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<AspNetRoleClaim>(entity =>
+            {
+                entity.HasIndex(e => e.RoleId, "IX_AspNetRoleClaims_RoleId");
+
+                entity.Property(e => e.Id).HasPrecision(10);
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.AspNetRoleClaims)
+                    .HasForeignKey(d => d.RoleId);
+            });
+
+            modelBuilder.Entity<AspNetUser>(entity =>
+            {
+                entity.HasIndex(e => e.NormalizedEmail, "EmailIndex");
+
+                entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
+                    .IsUnique();
+
+                entity.Property(e => e.AccessFailedCount).HasPrecision(10);
+
+                entity.Property(e => e.Email).HasMaxLength(256);
+
+                entity.Property(e => e.EmailConfirmed).HasPrecision(1);
+
+                entity.Property(e => e.LockoutEnabled).HasPrecision(1);
+
+                entity.Property(e => e.LockoutEnd).HasPrecision(7);
+
+                entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
+
+                entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+
+                entity.Property(e => e.PhoneNumberConfirmed).HasPrecision(1);
+
+                entity.Property(e => e.TwoFactorEnabled).HasPrecision(1);
+
+                entity.Property(e => e.UserName).HasMaxLength(256);
+
+                entity.HasMany(d => d.Roles)
+                    .WithMany(p => p.Users)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "AspNetUserRole",
+                        l => l.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId"),
+                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId"),
+                        j =>
+                        {
+                            j.HasKey("UserId", "RoleId");
+
+                            j.ToTable("AspNetUserRoles");
+
+                            j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
+                        });
+            });
+
+            modelBuilder.Entity<AspNetUserClaim>(entity =>
+            {
+                entity.HasIndex(e => e.UserId, "IX_AspNetUserClaims_UserId");
+
+                entity.Property(e => e.Id).HasPrecision(10);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.AspNetUserClaims)
+                    .HasForeignKey(d => d.UserId);
+            });
+
+            modelBuilder.Entity<AspNetUserLogin>(entity =>
+            {
+                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+
+                entity.HasIndex(e => e.UserId, "IX_AspNetUserLogins_UserId");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.AspNetUserLogins)
+                    .HasForeignKey(d => d.UserId);
+            });
+
+            modelBuilder.Entity<AspNetUserToken>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.AspNetUserTokens)
+                    .HasForeignKey(d => d.UserId);
+            });
+
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.ToTable("CATEGORIES");
 
-                entity.HasIndex(e => e.Name, "SYS_C0010968")
+                entity.HasIndex(e => e.Name, "SYS_C0013047")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Label, "SYS_C0010969")
+                entity.HasIndex(e => e.Label, "SYS_C0013048")
                     .IsUnique();
 
                 entity.Property(e => e.CategoryId)
@@ -94,10 +190,10 @@ namespace ConstruAppAPI.Models
             {
                 entity.ToTable("PRODUCTS");
 
-                entity.HasIndex(e => e.Name, "SYS_C0010986")
+                entity.HasIndex(e => e.Name, "SYS_C0013065")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Label, "SYS_C0010987")
+                entity.HasIndex(e => e.Label, "SYS_C0013066")
                     .IsUnique();
 
                 entity.Property(e => e.ProductId)
@@ -364,10 +460,10 @@ namespace ConstruAppAPI.Models
             {
                 entity.ToTable("USER_ADMINS");
 
-                entity.HasIndex(e => e.FullName, "SYS_C0010998")
+                entity.HasIndex(e => e.FullName, "SYS_C0013077")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Cpf, "SYS_C0010999")
+                entity.HasIndex(e => e.Cpf, "SYS_C0013078")
                     .IsUnique();
 
                 entity.Property(e => e.UserAdminId)
@@ -419,10 +515,10 @@ namespace ConstruAppAPI.Models
             {
                 entity.ToTable("USER_CLIENTS");
 
-                entity.HasIndex(e => e.FullName, "SYS_C0011015")
+                entity.HasIndex(e => e.FullName, "SYS_C0013094")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Cpf, "SYS_C0011016")
+                entity.HasIndex(e => e.Cpf, "SYS_C0013095")
                     .IsUnique();
 
                 entity.Property(e => e.UserClientId)
@@ -509,10 +605,10 @@ namespace ConstruAppAPI.Models
             {
                 entity.ToTable("USER_SELLERS");
 
-                entity.HasIndex(e => e.FantasyName, "SYS_C0011032")
+                entity.HasIndex(e => e.FantasyName, "SYS_C0013111")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Cnpj, "SYS_C0011033")
+                entity.HasIndex(e => e.Cnpj, "SYS_C0013112")
                     .IsUnique();
 
                 entity.Property(e => e.UserSellerId)
@@ -594,10 +690,6 @@ namespace ConstruAppAPI.Models
                     .IsUnicode(false)
                     .HasColumnName("ZIP_CODE");
             });
-
-            modelBuilder.HasSequence("CATEGORYSEQ");
-
-            modelBuilder.HasSequence("PRODUCTSEQ");
 
             OnModelCreatingPartial(modelBuilder);
         }

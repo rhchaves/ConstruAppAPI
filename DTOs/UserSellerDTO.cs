@@ -5,17 +5,17 @@
         public UserSellerDTO()
         { }
 
-        public string UserSellerId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string FantasyName { get; set; } = null!;
-        public string Cnpj { get; set; } = null!;
-        public string Street { get; set; } = null!;
-        public string AddressNumber { get; set; } = null!;
-        public string ZipCode { get; set; } = null!;
+        public string UserSellerId { get; set; }
+        public string UserId { get; set; }
+        public string FantasyName { get; set; }
+        public string Cnpj { get; set; }
+        public string Street { get; set; }
+        public string AddressNumber { get; set; }
+        public string ZipCode { get; set; }
         public string? Complement { get; set; }
-        public string District { get; set; } = null!;
-        public string City { get; set; } = null!;
-        public string State { get; set; } = null!;
+        public string District { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
        
     }
 }

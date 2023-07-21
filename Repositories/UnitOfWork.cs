@@ -1,11 +1,11 @@
-﻿using ConstruAppAPI.Context;
+﻿using ConstruAppAPI.Models;
 using ConstruAppAPI.Repository.Interfaces;
 
 namespace ConstruAppAPI.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public ConstruAppDbContext _context;
+        public ModelContext _context;
         private CategoryRepository _categoryRepository;
         private ProductRepository _productRepository;
         private PurchaseOrderRepository _purchaseOrderRepository;
@@ -15,7 +15,7 @@ namespace ConstruAppAPI.Repository
         private UserClientRepository _userClientRepository;
         private UserSellerRepository _userSellerRepository;
 
-        public UnitOfWork(ConstruAppDbContext context)
+        public UnitOfWork(ModelContext context)
         {
             _context = context;
         }
@@ -58,7 +58,7 @@ namespace ConstruAppAPI.Repository
         {
             get { return _userSellerRepository = _userSellerRepository ?? new UserSellerRepository(_context); }
         }
-        
+
         public async Task CommitAsync()
         {
             await _context.SaveChangesAsync();

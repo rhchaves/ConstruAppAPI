@@ -53,6 +53,8 @@ Values('alicate-universal-gedore', 'Alicate Universal Gedore', 'Alicate universa
 Insert into Products(Name, Label, Description, Product_Mark, Price, Image_URI, Status, Stock_Qtd, Sold_Qtd, category_id) 
 Values('espuma-expansiva', 'Espuma expansiva de poliuretano', 'Spray monocomponente, utilizada para fins domiciliares e profissionais.', 'Tekbond', 22.90, '../images/espuma-expansiva.jpg', 1, 20, 0, 7);
 
+COMMIT;
+
 
 ---- USUARIOS
 

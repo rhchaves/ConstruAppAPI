@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ConstruAppAPI.Models
+﻿namespace ConstruAppAPI.Models
 {
     public partial class Category
     {
@@ -11,8 +8,8 @@ namespace ConstruAppAPI.Models
         }
 
         public int CategoryId { get; set; }
-        public string Name { get; set; } = null!;
-        public string Label { get; set; } = null!;
+        public string Name { get; set; }
+        public string Label { get; set; }
         public string? ImageUri { get; set; }
         public bool? Status { get; set; }
         public DateTime UpdateStatus { get; set; }

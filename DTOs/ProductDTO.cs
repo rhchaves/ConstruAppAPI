@@ -6,10 +6,10 @@
         { }
 
         public int ProductId { get; set; }
-        public string Name { get; set; } = null!;
-        public string Label { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public string ProductMark { get; set; } = null!;
+        public string Name { get; set; }
+        public string Label { get; set; }
+        public string Description { get; set; }
+        public string ProductMark { get; set; }
         public decimal Price { get; set; }
         public string? ImageUri { get; set; }
         public int StockQtd { get; set; }

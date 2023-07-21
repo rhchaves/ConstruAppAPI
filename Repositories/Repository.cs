@@ -1,4 +1,4 @@
-﻿using ConstruAppAPI.Context;
+﻿using ConstruAppAPI.Models;
 using ConstruAppAPI.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -7,9 +7,9 @@ namespace ConstruAppAPI.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        protected ConstruAppDbContext _context;
+        protected ModelContext _context;
 
-        public Repository(ConstruAppDbContext context)
+        public Repository(ModelContext context)
         {
             _context = context;
         }

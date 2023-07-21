@@ -8,17 +8,17 @@
             ShoppingCarts = new HashSet<ShoppingCart>();
         }
 
-        public string UserClientId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string FullName { get; set; } = null!;
-        public string Cpf { get; set; } = null!;
-        public string Street { get; set; } = null!;
-        public string AddressNumber { get; set; } = null!;
-        public string ZipCode { get; set; } = null!;
+        public string UserClientId { get; set; }
+        public string UserId { get; set; }
+        public string FullName { get; set; }
+        public string Cpf { get; set; }
+        public string Street { get; set; }
+        public string AddressNumber { get; set; }
+        public string ZipCode { get; set; }
         public string? Complement { get; set; }
-        public string District { get; set; } = null!;
-        public string City { get; set; } = null!;
-        public string State { get; set; } = null!;
+        public string District { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
         public bool? Status { get; set; }
         public DateTime UpdateStatus { get; set; }
         public DateTime CreateRegister { get; set; }

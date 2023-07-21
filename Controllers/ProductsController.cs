@@ -1,10 +1,10 @@
 ﻿using ConstruAppAPI.Context;
-using ConstruAppAPI.Repository.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ConstruAppAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -12,7 +12,7 @@ namespace ConstruAppAPI.Controllers
         private readonly ConstruAppDbContext _context;
         public ProductsController(ConstruAppDbContext context)
         {
-            _context = context; 
+            _context = context;
         }
     }
 }
