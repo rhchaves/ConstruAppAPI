@@ -44,8 +44,8 @@ namespace ConstruAppAPI.Migrations
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("NUMBER(1)");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                    b.Property<DateTime?>("LockoutEnd")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -73,6 +73,21 @@ namespace ConstruAppAPI.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("NVARCHAR2(256)");
+                    
+                    b.Property<bool>("Status")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<DateTime>("UpdateStatus")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<DateTime>("CreateRegister")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<DateTime>("UpdateRegister")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<DateTime?>("DeletedRegister")
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("Id");
 

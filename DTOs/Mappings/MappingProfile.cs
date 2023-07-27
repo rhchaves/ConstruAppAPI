@@ -7,6 +7,7 @@ namespace ConstruAppAPI.DTOs.Mappings
     {
         public MappingProfile()
         {
+            CreateMap<AspNetUserCustom, AspNetUserCustomDTO>().ReverseMap();
             CreateMap<Category, CategoryDTO>().ReverseMap();
             CreateMap<Product, ProductDTO>().ReverseMap();
             CreateMap<PurchaseOrder, PurchaseOrderDTO>().ReverseMap();

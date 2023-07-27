@@ -17,7 +17,7 @@
         public string? ImageUri { get; set; }
         public int StockQtd { get; set; }
         public int SoldQtd { get; set; }
-        public bool? Status { get; set; }
+        public int? Status { get; set; }
         public DateTime UpdateStatus { get; set; }
         public DateTime CreateRegister { get; set; }
         public DateTime UpdateRegister { get; set; }

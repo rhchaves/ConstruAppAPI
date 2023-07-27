@@ -130,3 +130,46 @@ INSERT INTO AspNetUserClaims (user_id, ClaimType, ClaimValue) VALUES ('{id}', 'C
 INSERT INTO user_clients (user_client_id, user_id, full_name, CPF, Street, Number, zip_code, Complemnt, District, City, State, status)VALUES ('{id}', '{id}', 'João da Silva', '12312312312', 'Rua Amazonas', '1234','09540204', '', 'Oswaldo Cruz', 'São Caetano do Sul', 'SP', 1);
 
 COMMIT;
+
+
+
+
+{
+  "userName": "rodolfo",
+  "fullName": "Rodolfo Chaves",
+  "email": "rodolfo@teste.com",
+  "password": "Testes@123",
+  "cpf": "12345678910",
+  "typeAdmin": 5
+}
+
+{
+  "userName": "rodolfo1",
+  "email": "rodolfo@teste.com",
+  "password": "Testes@123"
+}
+
+{
+  "userName": "rodolfo2",
+  "email": "rodolfo@teste.com",
+  "password": "Testes@123"
+}
+
+{
+  "userName": "rodolfo3",
+  "email": "rodolfo@teste.com",
+  "password": "Testes@123"
+}
+
+
+claims = new List<Claim>
+{
+    new Claim("seller", "vendedor"),
+    new Claim(ClaimTypes.Role, "seller_role")
+};
+
+claims = new List<Claim>
+{
+    new Claim("client", "cliente"),
+    new Claim(ClaimTypes.Role, "client_role")
+};

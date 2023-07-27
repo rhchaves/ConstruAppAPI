@@ -29,7 +29,7 @@ builder.Services.AddDbContext<ConstruAppDbContext>(options =>
     options.UseOracle(connectionString));
 
 // Configuração do serviço Identity
-builder.Services.AddIdentity<AspUserCustom, IdentityRole>()
+builder.Services.AddIdentity<AspNetUserCustom, IdentityRole>()
                 .AddEntityFrameworkStores<ConstruAppDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -37,7 +37,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Registro dos Serviços
 builder.Services.AddScoped<IAdminService, AdminService>();
-builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
+builder.Services.AddScoped<IAuthorizationCustomService, AuthorizationCustomService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IProductService, ProductService>();

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -39,9 +38,14 @@ namespace ConstruAppAPI.Migrations
                     PhoneNumber = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "NUMBER(1)", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: true),
+                    LockoutEnd = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: true),
                     LockoutEnabled = table.Column<bool>(type: "NUMBER(1)", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                    AccessFailedCount = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    Status = table.Column<bool>(type: "NUMBER(1)", nullable: false, defaultValue: 0),
+                    UpdateStatus = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false, defaultValueSql: "SYSTIMESTAMP"),
+                    CreateRegister = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false, defaultValueSql: "SYSTIMESTAMP"),
+                    UpdateRegister = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false, defaultValueSql: "SYSTIMESTAMP"),
+                    DeletedRegister = table.Column<DateTimeOffset>(type: "TIMESTAMP(7)", nullable: true)
                 },
                 constraints: table =>
                 {

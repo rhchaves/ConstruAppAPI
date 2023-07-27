@@ -11,7 +11,7 @@
         public string UserClientId { get; set; }
         public string UserSellerId { get; set; }
         public decimal TotalPrice { get; set; }
-        public bool? Status { get; set; }
+        public int? Status { get; set; }
         public DateTime UpdateStatus { get; set; }
         public DateTime CreateRegister { get; set; }
         public DateTime UpdateRegister { get; set; }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ConstruAppAPI.Context
 {
-    public class ConstruAppDbContext : IdentityDbContext<AspUserCustom>
+    public class ConstruAppDbContext : IdentityDbContext<AspNetUserCustom>
     {
         public ConstruAppDbContext(DbContextOptions<ConstruAppDbContext> options) : base(options)
         { }

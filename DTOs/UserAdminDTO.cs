@@ -1,11 +1,10 @@
 ﻿namespace ConstruAppAPI.DTOs
 {
-    public partial class UserAdminDTO
+    public partial class UserAdminDTO : AspNetUserCustomDTO
     {
-        public string UserAdminId { get; set; }
-        public string UserId { get; set; }
-        public string FullName { get; set; }
-        public string Cpf { get; set; }
-        public bool? Status { get; set; }
+        public string? UserAdminId { get; set; }
+        public string FullName { get; set; } = null!;
+        public string Cpf { get; set; } = null!;
+        public int TypeAdmin { get; set; }
     }
 }

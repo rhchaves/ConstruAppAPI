@@ -4,6 +4,7 @@ namespace ConstruAppAPI.Models
 {
     public partial class ModelContext : DbContext
     {
+        private readonly IConfiguration _configuration;
         public ModelContext(DbContextOptions<ModelContext> options) : base(options)
         {
         }
@@ -27,8 +28,9 @@ namespace ConstruAppAPI.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
                 // #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseOracle("User Id=CONSTRUAPP;Password=construapp;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XEPDB1)))");
+                optionsBuilder.UseOracle(connectionString);
             }
         }
 
@@ -67,6 +69,12 @@ namespace ConstruAppAPI.Models
 
                 entity.Property(e => e.AccessFailedCount).HasPrecision(10);
 
+                entity.Property(e => e.CreateRegister)
+                    .HasPrecision(7)
+                    .HasDefaultValueSql("(SYSTIMESTAMP) ");
+
+                entity.Property(e => e.DeletedRegister).HasPrecision(7);
+
                 entity.Property(e => e.Email).HasMaxLength(256);
 
                 entity.Property(e => e.EmailConfirmed).HasPrecision(1);
@@ -81,7 +89,20 @@ namespace ConstruAppAPI.Models
 
                 entity.Property(e => e.PhoneNumberConfirmed).HasPrecision(1);
 
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasPrecision(1)
+                    .HasDefaultValueSql("0 ");
+
                 entity.Property(e => e.TwoFactorEnabled).HasPrecision(1);
+
+                entity.Property(e => e.UpdateRegister)
+                    .HasPrecision(7)
+                    .HasDefaultValueSql("(SYSTIMESTAMP) ");
+
+                entity.Property(e => e.UpdateStatus)
+                    .HasPrecision(7)
+                    .HasDefaultValueSql("(SYSTIMESTAMP) ");
 
                 entity.Property(e => e.UserName).HasMaxLength(256);
 
@@ -136,10 +157,10 @@ namespace ConstruAppAPI.Models
             {
                 entity.ToTable("CATEGORIES");
 
-                entity.HasIndex(e => e.Name, "SYS_C0013047")
+                entity.HasIndex(e => e.Name, "SYS_C0014337")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Label, "SYS_C0013048")
+                entity.HasIndex(e => e.Label, "SYS_C0014338")
                     .IsUnique();
 
                 entity.Property(e => e.CategoryId)
@@ -190,10 +211,10 @@ namespace ConstruAppAPI.Models
             {
                 entity.ToTable("PRODUCTS");
 
-                entity.HasIndex(e => e.Name, "SYS_C0013065")
+                entity.HasIndex(e => e.Name, "SYS_C0014355")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Label, "SYS_C0013066")
+                entity.HasIndex(e => e.Label, "SYS_C0014356")
                     .IsUnique();
 
                 entity.Property(e => e.ProductId)
@@ -460,69 +481,54 @@ namespace ConstruAppAPI.Models
             {
                 entity.ToTable("USER_ADMINS");
 
-                entity.HasIndex(e => e.FullName, "SYS_C0013077")
+                entity.HasIndex(e => e.FullName, "SYS_C0015165")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Cpf, "SYS_C0013078")
+                entity.HasIndex(e => e.Cpf, "SYS_C0015166")
                     .IsUnique();
 
                 entity.Property(e => e.UserAdminId)
-                    .HasMaxLength(300)
+                    .HasMaxLength(450)
                     .IsUnicode(false)
                     .HasColumnName("USER_ADMIN_ID");
+
+                entity.Property(e => e.AspNetUserId)
+                    .HasMaxLength(450)
+                    .HasColumnName("ASP_NET_USER_ID");
 
                 entity.Property(e => e.Cpf)
                     .HasMaxLength(11)
                     .IsUnicode(false)
                     .HasColumnName("CPF");
 
-                entity.Property(e => e.CreateRegister)
-                    .HasPrecision(7)
-                    .HasColumnName("CREATE_REGISTER")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
-
-                entity.Property(e => e.DeletedRegister)
-                    .HasPrecision(7)
-                    .HasColumnName("DELETED_REGISTER");
-
                 entity.Property(e => e.FullName)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("FULL_NAME");
 
-                entity.Property(e => e.Status)
+                entity.Property(e => e.TypeAdmin)
                     .HasPrecision(1)
-                    .HasColumnName("STATUS")
+                    .HasColumnName("TYPE_ADMIN")
                     .HasDefaultValueSql("0 ");
 
-                entity.Property(e => e.UpdateRegister)
-                    .HasPrecision(7)
-                    .HasColumnName("UPDATE_REGISTER")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
-
-                entity.Property(e => e.UpdateStatus)
-                    .HasPrecision(7)
-                    .HasColumnName("UPDATE_STATUS")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(300)
-                    .IsUnicode(false)
-                    .HasColumnName("USER_ID");
+                entity.HasOne(d => d.AspNetUser)
+                    .WithMany(p => p.UserAdmins)
+                    .HasForeignKey(d => d.AspNetUserId)
+                    .HasConstraintName("FK_USER_ADMINS_ASP_NET_USERS");
             });
 
             modelBuilder.Entity<UserClient>(entity =>
             {
                 entity.ToTable("USER_CLIENTS");
 
-                entity.HasIndex(e => e.FullName, "SYS_C0013094")
+                entity.HasIndex(e => e.FullName, "SYS_C0015179")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Cpf, "SYS_C0013095")
+                entity.HasIndex(e => e.Cpf, "SYS_C0015180")
                     .IsUnique();
 
                 entity.Property(e => e.UserClientId)
-                    .HasMaxLength(300)
+                    .HasMaxLength(450)
                     .IsUnicode(false)
                     .HasColumnName("USER_CLIENT_ID");
 
@@ -530,6 +536,10 @@ namespace ConstruAppAPI.Models
                     .HasMaxLength(10)
                     .IsUnicode(false)
                     .HasColumnName("ADDRESS_NUMBER");
+
+                entity.Property(e => e.AspNetUserId)
+                    .HasMaxLength(450)
+                    .HasColumnName("ASP_NET_USER_ID");
 
                 entity.Property(e => e.City)
                     .HasMaxLength(50)
@@ -546,15 +556,6 @@ namespace ConstruAppAPI.Models
                     .IsUnicode(false)
                     .HasColumnName("CPF");
 
-                entity.Property(e => e.CreateRegister)
-                    .HasPrecision(7)
-                    .HasColumnName("CREATE_REGISTER")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
-
-                entity.Property(e => e.DeletedRegister)
-                    .HasPrecision(7)
-                    .HasColumnName("DELETED_REGISTER");
-
                 entity.Property(e => e.District)
                     .HasMaxLength(50)
                     .IsUnicode(false)
@@ -570,49 +571,39 @@ namespace ConstruAppAPI.Models
                     .IsUnicode(false)
                     .HasColumnName("STATE");
 
-                entity.Property(e => e.Status)
-                    .HasPrecision(1)
-                    .HasColumnName("STATUS")
-                    .HasDefaultValueSql("0 ");
-
                 entity.Property(e => e.Street)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("STREET");
 
-                entity.Property(e => e.UpdateRegister)
-                    .HasPrecision(7)
-                    .HasColumnName("UPDATE_REGISTER")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
-
-                entity.Property(e => e.UpdateStatus)
-                    .HasPrecision(7)
-                    .HasColumnName("UPDATE_STATUS")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(300)
-                    .IsUnicode(false)
-                    .HasColumnName("USER_ID");
+                entity.Property(e => e.TypeClient)
+                    .HasPrecision(1)
+                    .HasColumnName("TYPE_CLIENT")
+                    .HasDefaultValueSql("0 ");
 
                 entity.Property(e => e.ZipCode)
                     .HasMaxLength(8)
                     .IsUnicode(false)
                     .HasColumnName("ZIP_CODE");
+
+                entity.HasOne(d => d.AspNetUser)
+                    .WithMany(p => p.UserClients)
+                    .HasForeignKey(d => d.AspNetUserId)
+                    .HasConstraintName("FK_USER_CLIENTS_ASP_NET_USERS");
             });
 
             modelBuilder.Entity<UserSeller>(entity =>
             {
                 entity.ToTable("USER_SELLERS");
 
-                entity.HasIndex(e => e.FantasyName, "SYS_C0013111")
+                entity.HasIndex(e => e.FantasyName, "SYS_C0015193")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Cnpj, "SYS_C0013112")
+                entity.HasIndex(e => e.Cnpj, "SYS_C0015194")
                     .IsUnique();
 
                 entity.Property(e => e.UserSellerId)
-                    .HasMaxLength(300)
+                    .HasMaxLength(450)
                     .IsUnicode(false)
                     .HasColumnName("USER_SELLER_ID");
 
@@ -620,6 +611,10 @@ namespace ConstruAppAPI.Models
                     .HasMaxLength(10)
                     .IsUnicode(false)
                     .HasColumnName("ADDRESS_NUMBER");
+
+                entity.Property(e => e.AspNetUserId)
+                    .HasMaxLength(450)
+                    .HasColumnName("ASP_NET_USER_ID");
 
                 entity.Property(e => e.City)
                     .HasMaxLength(50)
@@ -636,15 +631,6 @@ namespace ConstruAppAPI.Models
                     .IsUnicode(false)
                     .HasColumnName("COMPLEMENT");
 
-                entity.Property(e => e.CreateRegister)
-                    .HasPrecision(7)
-                    .HasColumnName("CREATE_REGISTER")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
-
-                entity.Property(e => e.DeletedRegister)
-                    .HasPrecision(7)
-                    .HasColumnName("DELETED_REGISTER");
-
                 entity.Property(e => e.District)
                     .HasMaxLength(50)
                     .IsUnicode(false)
@@ -660,35 +646,25 @@ namespace ConstruAppAPI.Models
                     .IsUnicode(false)
                     .HasColumnName("STATE");
 
-                entity.Property(e => e.Status)
-                    .HasPrecision(1)
-                    .HasColumnName("STATUS")
-                    .HasDefaultValueSql("0 ");
-
                 entity.Property(e => e.Street)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("STREET");
 
-                entity.Property(e => e.UpdateRegister)
-                    .HasPrecision(7)
-                    .HasColumnName("UPDATE_REGISTER")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
-
-                entity.Property(e => e.UpdateStatus)
-                    .HasPrecision(7)
-                    .HasColumnName("UPDATE_STATUS")
-                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(300)
-                    .IsUnicode(false)
-                    .HasColumnName("USER_ID");
+                entity.Property(e => e.TypeSeller)
+                    .HasPrecision(1)
+                    .HasColumnName("TYPE_SELLER")
+                    .HasDefaultValueSql("0 ");
 
                 entity.Property(e => e.ZipCode)
                     .HasMaxLength(8)
                     .IsUnicode(false)
                     .HasColumnName("ZIP_CODE");
+
+                entity.HasOne(d => d.AspNetUser)
+                    .WithMany(p => p.UserSellers)
+                    .HasForeignKey(d => d.AspNetUserId)
+                    .HasConstraintName("FK_USER_SELLERS_ASP_NET_USERS");
             });
 
             OnModelCreatingPartial(modelBuilder);
