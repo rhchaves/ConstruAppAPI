@@ -17,14 +17,18 @@ namespace ConstruAppAPI.Services
         private readonly IConfiguration _configuration;
         private readonly IAdminService _adminService;
         private readonly IUserService _userService;
+        private readonly IClientService _clientService;
+        private readonly ISellerService _sellerService;
         public AuthorizationCustomService(UserManager<AspNetUserCustom> userManager, SignInManager<AspNetUserCustom> signInManager, IConfiguration configuration, 
-            IAdminService adminService, IUserService userService)
+            IAdminService adminService, IUserService userService, IClientService clientService, ISellerService sellerService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _adminService = adminService;
             _userService = userService;
+            _clientService = clientService;
+            _sellerService = sellerService;
         }
 
         public async Task<IdentityResult> AddAdminAsync([FromBody] UserAdminDTO userAdmin)
@@ -51,12 +55,46 @@ namespace ConstruAppAPI.Services
 
         public async Task<IdentityResult> AddClientAsync([FromBody] UserClientDTO userClient)
         {
-            return null;
+            var email = await _userManager.FindByEmailAsync(userClient.Email);
+
+            if (email != null) return IdentityResult.Failed(new IdentityError { Description = "Erro de e-mail" });
+
+            var newUser = _userService.GenereteNewUserClient(userClient);
+            try
+            {
+                var resultUser = await _userManager.CreateAsync(newUser, userClient.Password);
+                var resultClient = await _clientService.CreateClientAsync(newUser, userClient);
+
+                return IdentityResult.Success;
+            }
+            catch (Exception error)
+            {
+                await _userManager.DeleteAsync(newUser);
+
+                return IdentityResult.Failed(new IdentityError { Description = error.Message });
+            }
         }
 
         public async Task<IdentityResult> AddSellerAsync([FromBody] UserSellerDTO userSeller)
         {
-            return null;
+            var email = await _userManager.FindByEmailAsync(userSeller.Email);
+
+            if (email != null) return IdentityResult.Failed(new IdentityError { Description = "Erro de e-mail" });
+
+            var newUser = _userService.GenereteNewUserSeller(userSeller);
+            try
+            {
+                var resultUser = await _userManager.CreateAsync(newUser, userSeller.Password);
+                var resultSeller = await _sellerService.CreateSellerAsync(newUser, userSeller);
+
+                return IdentityResult.Success;
+            }
+            catch (Exception error)
+            {
+                await _userManager.DeleteAsync(newUser);
+
+                return IdentityResult.Failed(new IdentityError { Description = error.Message });
+            }
         }
 
         public async Task<UserToken> LoginAsync([FromBody] AspNetUserCustomDTO userInfo)

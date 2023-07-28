@@ -132,7 +132,23 @@ INSERT INTO user_clients (user_client_id, user_id, full_name, CPF, Street, Numbe
 COMMIT;
 
 
+{
+  "userName": "rodolfo",
+  "email": "rodolfo@teste.com",
+  "password": "Testes@123",
+}
 
+{
+  "userName": "cliente",
+  "email": "cliente@teste.com",
+  "password": "Testes@123",
+}
+
+{
+  "userName": "vendedor",
+  "email": "vendedor@teste.com",
+  "password": "Testes@123",
+}
 
 {
   "userName": "rodolfo",
@@ -162,14 +178,33 @@ COMMIT;
 }
 
 
-claims = new List<Claim>
 {
-    new Claim("seller", "vendedor"),
-    new Claim(ClaimTypes.Role, "seller_role")
-};
+  "userName": "cliente",
+  "email": "cliente@teste.com",
+  "password": "Testes@123",
+  "fullName": "Cliente Teste",
+  "cpf": "12345678911",
+  "typeClient": 0,
+  "street": "teste",
+  "addressNumber": "123",
+  "zipCode": "08400123",
+  "district": "teste",
+  "city": "teste",
+  "state": "sp"
+}
 
-claims = new List<Claim>
+
 {
-    new Claim("client", "cliente"),
-    new Claim(ClaimTypes.Role, "client_role")
-};
+  "userName": "vendedor",
+  "email": "vendedor@teste.com",
+  "password": "Testes@123",
+  "fantasyName": "vendedor Teste",
+  "cnpj": "12345678911",
+  "typeSeller": 0,
+  "street": "teste",
+  "addressNumber": "123",
+  "zipCode": "08400123",
+  "district": "teste",
+  "city": "teste",
+  "state": "sp"
+}
