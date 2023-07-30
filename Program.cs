@@ -45,6 +45,7 @@ builder.Services.AddScoped<IPurchaseOrderItemService, PurchaseOrderItemService>(
 builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
 builder.Services.AddScoped<ISellerService, SellerService>();
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+builder.Services.AddScoped<IShoppingCartItemService, ShoppingCartItemService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 // Mapeamento para os DTOs

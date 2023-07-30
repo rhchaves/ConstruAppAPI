@@ -2,9 +2,9 @@
 {
     public partial class UserAdmin
     {
-        public string? UserAdminId { get; set; }
-        public string? FullName { get; set; }
-        public string? Cpf { get; set; }
+        public string UserAdminId { get; set; } = null!;
+        public string FullName { get; set; } = null!;
+        public string Cpf { get; set; } = null!;
         public int TypeAdmin { get; set; }
         public string AspNetUserId { get; set; } = null!;
 

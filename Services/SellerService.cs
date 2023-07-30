@@ -27,19 +27,19 @@ namespace ConstruAppAPI.Services
                 _context.UserSellerRepository.AddItem(newClient);
                 await _context.CommitAsync();
 
-                var result = await AttributeClaimsAsync(user, seller.TypeSeller);
+                IdentityResult result = await AttributeClaimsAsync(user, seller.TypeSeller);
 
                 return newClient;
             }
-            catch (Exception ex)
+            catch (Exception error)
             {
-                return null;
+                throw new Exception("Ocorreu um erro ao criar o vendedor: " + error.Message);
             }
         }
 
-        private UserSeller GenereteNewSeller(AspNetUserCustom user, UserSellerDTO seller)
+        private static UserSeller GenereteNewSeller(AspNetUserCustom user, UserSellerDTO seller)
         {
-            var newClient = new UserSeller
+            UserSeller newClient = new UserSeller
             {
                 AspNetUserId = user.Id,
                 UserSellerId = user.Id,
@@ -87,7 +87,7 @@ namespace ConstruAppAPI.Services
                 };
             }
 
-            var result = await _userManager.AddClaimsAsync(user, claims);
+            IdentityResult result = await _userManager.AddClaimsAsync(user, claims);
 
             return result;
         }

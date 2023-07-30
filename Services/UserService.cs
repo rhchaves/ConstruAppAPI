@@ -8,7 +8,7 @@ namespace ConstruAppAPI.Services
     {
         public AspNetUserCustom GenereteNewUserAdmin(UserAdminDTO userAdmin)
         {
-            var newUser = new AspNetUserCustom
+            AspNetUserCustom newUser = new AspNetUserCustom
             {
                 UserName = userAdmin.UserName,
                 Email = userAdmin.Email,
@@ -26,7 +26,7 @@ namespace ConstruAppAPI.Services
 
         public AspNetUserCustom GenereteNewUserClient(UserClientDTO userClient)
         {
-            var newUser = new AspNetUserCustom
+            AspNetUserCustom newUser = new AspNetUserCustom
             {
                 UserName = userClient.UserName,
                 Email = userClient.Email,
@@ -44,7 +44,7 @@ namespace ConstruAppAPI.Services
 
         public AspNetUserCustom GenereteNewUserSeller(UserSellerDTO userSeller)
         {
-            var newUser = new AspNetUserCustom
+            AspNetUserCustom newUser = new AspNetUserCustom
             {
                 UserName = userSeller.UserName,
                 Email = userSeller.Email,

@@ -5,24 +5,26 @@ namespace ConstruAppAPI.Models
     public partial class ModelContext : DbContext
     {
         private readonly IConfiguration _configuration;
-        public ModelContext(DbContextOptions<ModelContext> options) : base(options)
+        public ModelContext(DbContextOptions<ModelContext> options, IConfiguration configuration) : base(options)
         {
+            _configuration = configuration;
         }
 
-        public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
-        public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
-        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
-        public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
-        public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
-        public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
-        public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<Product> Products { get; set; }
-        public virtual DbSet<PurchaseOrder> PurchaseOrders { get; set; }
-        public virtual DbSet<PurchaseOrderItem> PurchaseOrderItems { get; set; }
-        public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; }
-        public virtual DbSet<UserAdmin> UserAdmins { get; set; }
-        public virtual DbSet<UserClient> UserClients { get; set; }
-        public virtual DbSet<UserSeller> UserSellers { get; set; }
+        public virtual DbSet<AspNetRole> AspNetRoles { get; set; } = null!;
+        public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; } = null!;
+        public virtual DbSet<AspNetUser> AspNetUsers { get; set; } = null!;
+        public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; } = null!;
+        public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; } = null!;
+        public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; } = null!;
+        public virtual DbSet<Category> Categories { get; set; } = null!;
+        public virtual DbSet<Product> Products { get; set; } = null!;
+        public virtual DbSet<PurchaseOrder> PurchaseOrders { get; set; } = null!;
+        public virtual DbSet<PurchaseOrderItem> PurchaseOrderItems { get; set; } = null!;
+        public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; } = null!;
+        public virtual DbSet<ShoppingCartItem> ShoppingCartItems { get; set; } = null!;
+        public virtual DbSet<UserAdmin> UserAdmins { get; set; } = null!;
+        public virtual DbSet<UserClient> UserClients { get; set; } = null!;
+        public virtual DbSet<UserSeller> UserSellers { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -157,10 +159,10 @@ namespace ConstruAppAPI.Models
             {
                 entity.ToTable("CATEGORIES");
 
-                entity.HasIndex(e => e.Name, "SYS_C0014337")
+                entity.HasIndex(e => e.Name, "SYS_C0016278")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Label, "SYS_C0014338")
+                entity.HasIndex(e => e.Label, "SYS_C0016279")
                     .IsUnique();
 
                 entity.Property(e => e.CategoryId)
@@ -211,10 +213,10 @@ namespace ConstruAppAPI.Models
             {
                 entity.ToTable("PRODUCTS");
 
-                entity.HasIndex(e => e.Name, "SYS_C0014355")
+                entity.HasIndex(e => e.Name, "SYS_C0016296")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Label, "SYS_C0014356")
+                entity.HasIndex(e => e.Label, "SYS_C0016297")
                     .IsUnique();
 
                 entity.Property(e => e.ProductId)
@@ -264,8 +266,9 @@ namespace ConstruAppAPI.Models
                     .HasColumnName("PRODUCT_MARK");
 
                 entity.Property(e => e.SoldQtd)
-                    .HasPrecision(10)
-                    .HasColumnName("SOLD_QTD");
+                   .HasPrecision(10)
+                   .HasColumnName("SOLD_QTD")
+                   .HasDefaultValueSql("0 ");
 
                 entity.Property(e => e.Status)
                     .HasPrecision(1)
@@ -274,7 +277,8 @@ namespace ConstruAppAPI.Models
 
                 entity.Property(e => e.StockQtd)
                     .HasPrecision(10)
-                    .HasColumnName("STOCK_QTD");
+                    .HasColumnName("STOCK_QTD")
+                    .HasDefaultValueSql("0 ");
 
                 entity.Property(e => e.UpdateRegister)
                     .HasPrecision(7)
@@ -382,7 +386,8 @@ namespace ConstruAppAPI.Models
 
                 entity.Property(e => e.Quantity)
                     .HasPrecision(10)
-                    .HasColumnName("QUANTITY");
+                    .HasColumnName("QUANTITY")
+                    .HasDefaultValueSql("1 ");
 
                 entity.Property(e => e.Status)
                     .HasPrecision(1)
@@ -406,11 +411,13 @@ namespace ConstruAppAPI.Models
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.PurchaseOrderItems)
                     .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PURCHASE_ORDER_PRODUCT_ID");
 
                 entity.HasOne(d => d.PurchaseOrder)
                     .WithMany(p => p.PurchaseOrderItems)
                     .HasForeignKey(d => d.PurchaseOrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PURCHASE_ORDER_ID");
             });
 
@@ -436,14 +443,6 @@ namespace ConstruAppAPI.Models
                     .IsUnicode(false)
                     .HasColumnName("PAYMENT");
 
-                entity.Property(e => e.ProductId)
-                    .HasPrecision(10)
-                    .HasColumnName("PRODUCT_ID");
-
-                entity.Property(e => e.QtdProduct)
-                    .HasPrecision(10)
-                    .HasColumnName("QTD_PRODUCT");
-
                 entity.Property(e => e.Status)
                     .HasPrecision(1)
                     .HasColumnName("STATUS")
@@ -464,12 +463,6 @@ namespace ConstruAppAPI.Models
                     .IsUnicode(false)
                     .HasColumnName("USER_CLIENT_ID");
 
-                entity.HasOne(d => d.Product)
-                    .WithMany(p => p.ShoppingCarts)
-                    .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SHOPPING_CART_PRODUCT_ID");
-
                 entity.HasOne(d => d.UserClient)
                     .WithMany(p => p.ShoppingCarts)
                     .HasForeignKey(d => d.UserClientId)
@@ -477,14 +470,72 @@ namespace ConstruAppAPI.Models
                     .HasConstraintName("FK_SHOPPING_CART_USER_CLIENT_ID");
             });
 
+            modelBuilder.Entity<ShoppingCartItem>(entity =>
+            {
+                entity.ToTable("SHOPPING_CART_ITEMS");
+
+                entity.Property(e => e.ShoppingCartItemId)
+                    .HasPrecision(10)
+                    .HasColumnName("SHOPPING_CART_ITEM_ID");
+
+                entity.Property(e => e.CreateRegister)
+                    .HasPrecision(7)
+                    .HasColumnName("CREATE_REGISTER")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
+
+                entity.Property(e => e.DeletedRegister)
+                    .HasPrecision(7)
+                    .HasColumnName("DELETED_REGISTER");
+
+                entity.Property(e => e.ProductId)
+                    .HasPrecision(10)
+                    .HasColumnName("PRODUCT_ID");
+
+                entity.Property(e => e.QtdProduct)
+                    .HasPrecision(10)
+                    .HasColumnName("QTD_PRODUCT")
+                    .HasDefaultValueSql("1 ");
+
+                entity.Property(e => e.ShoppingCartId)
+                    .HasPrecision(10)
+                    .HasColumnName("SHOPPING_CART_ID");
+
+                entity.Property(e => e.Status)
+                    .HasPrecision(1)
+                    .HasColumnName("STATUS")
+                    .HasDefaultValueSql("0 ");
+
+                entity.Property(e => e.UpdateRegister)
+                    .HasPrecision(7)
+                    .HasColumnName("UPDATE_REGISTER")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
+
+                entity.Property(e => e.UpdateStatus)
+                    .HasPrecision(7)
+                    .HasColumnName("UPDATE_STATUS")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP ");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.ShoppingCartItems)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SHOPPING_CART_PRODUCT_ID");
+
+                entity.HasOne(d => d.ShoppingCart)
+                    .WithMany(p => p.ShoppingCartItems)
+                    .HasForeignKey(d => d.ShoppingCartId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SHOPPING_CART_ID");
+            });
+
             modelBuilder.Entity<UserAdmin>(entity =>
             {
                 entity.ToTable("USER_ADMINS");
 
-                entity.HasIndex(e => e.FullName, "SYS_C0015165")
+                entity.HasIndex(e => e.FullName, "SYS_C0016305")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Cpf, "SYS_C0015166")
+                entity.HasIndex(e => e.Cpf, "SYS_C0016306")
                     .IsUnique();
 
                 entity.Property(e => e.UserAdminId)
@@ -521,10 +572,10 @@ namespace ConstruAppAPI.Models
             {
                 entity.ToTable("USER_CLIENTS");
 
-                entity.HasIndex(e => e.FullName, "SYS_C0015179")
+                entity.HasIndex(e => e.FullName, "SYS_C0016320")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Cpf, "SYS_C0015180")
+                entity.HasIndex(e => e.Cpf, "SYS_C0016321")
                     .IsUnique();
 
                 entity.Property(e => e.UserClientId)
@@ -596,10 +647,10 @@ namespace ConstruAppAPI.Models
             {
                 entity.ToTable("USER_SELLERS");
 
-                entity.HasIndex(e => e.FantasyName, "SYS_C0015193")
+                entity.HasIndex(e => e.FantasyName, "SYS_C0016335")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Cnpj, "SYS_C0015194")
+                entity.HasIndex(e => e.Cnpj, "SYS_C0016336")
                     .IsUnique();
 
                 entity.Property(e => e.UserSellerId)

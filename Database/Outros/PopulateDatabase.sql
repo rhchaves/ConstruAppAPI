@@ -135,19 +135,19 @@ COMMIT;
 {
   "userName": "rodolfo",
   "email": "rodolfo@teste.com",
-  "password": "Testes@123",
+  "password": "Testes@123"
 }
 
 {
   "userName": "cliente",
   "email": "cliente@teste.com",
-  "password": "Testes@123",
+  "password": "Testes@123"
 }
 
 {
   "userName": "vendedor",
   "email": "vendedor@teste.com",
-  "password": "Testes@123",
+  "password": "Testes@123"
 }
 
 {

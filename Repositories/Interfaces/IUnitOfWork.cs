@@ -7,6 +7,7 @@
         IPurchaseOrderRepository PurchaseOrderRepository { get; }
         IPurchaseOrderItemRepository PurchaseOrderItemRepository { get; }
         IShoppingCartRepository ShoppingCartRepository  { get; }
+        IShoppingCartItemRepository ShoppingCartItemRepository { get; }
         IUserAdminRepository UserAdminRepository { get; }
         IUserClientRepository UserClientRepository { get; }
         IUserSellerRepository UserSellerRepository { get; }

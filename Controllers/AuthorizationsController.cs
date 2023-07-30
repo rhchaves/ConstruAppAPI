@@ -1,5 +1,6 @@
 ﻿using ConstruAppAPI.DTOs;
 using ConstruAppAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConstruAppAPI.Controllers
@@ -18,7 +19,7 @@ namespace ConstruAppAPI.Controllers
         [HttpPost("add-admin")]
         public async Task<ActionResult> AddAdminAsync([FromBody] UserAdminDTO userAdmin)
         {
-            var result = await _authorizationCustomService.AddAdminAsync(userAdmin);
+            IdentityResult result = await _authorizationCustomService.AddAdminAsync(userAdmin);
 
             if (result == null) return BadRequest("Email já cadastrado!"); // verificar como tratar esse caso
 
@@ -30,7 +31,7 @@ namespace ConstruAppAPI.Controllers
         [HttpPost("add-client")]
         public async Task<ActionResult> AddClientAsync([FromBody] UserClientDTO userClient)
         {
-            var result = await _authorizationCustomService.AddClientAsync(userClient);
+            IdentityResult result = await _authorizationCustomService.AddClientAsync(userClient);
 
             if (result == null) return BadRequest("Email já cadastrado!"); // verificar como tratar esse caso
 
@@ -42,7 +43,7 @@ namespace ConstruAppAPI.Controllers
         [HttpPost("add-seller")]
         public async Task<ActionResult> AddSellerAsync([FromBody] UserSellerDTO userSeller)
         {
-            var result = await _authorizationCustomService.AddSellerAsync(userSeller);
+            IdentityResult result = await _authorizationCustomService.AddSellerAsync(userSeller);
 
             if (result == null) return BadRequest("Email já cadastrado!"); // verificar como tratar esse caso
 
@@ -54,10 +55,10 @@ namespace ConstruAppAPI.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> LoginAsync([FromBody] AspNetUserCustomDTO userInfo)
         {
-            var result = await _authorizationCustomService.LoginAsync(userInfo);
+            UserToken result = await _authorizationCustomService.LoginAsync(userInfo);
 
             if (result == null) return Unauthorized("Usuário ou Senha Inválidos!");
-            
+
             return Ok(result);
         }
 

@@ -19,8 +19,8 @@ namespace ConstruAppAPI.Services
         private readonly IUserService _userService;
         private readonly IClientService _clientService;
         private readonly ISellerService _sellerService;
-        public AuthorizationCustomService(UserManager<AspNetUserCustom> userManager, SignInManager<AspNetUserCustom> signInManager, IConfiguration configuration, 
-            IAdminService adminService, IUserService userService, IClientService clientService, ISellerService sellerService)
+        public AuthorizationCustomService(UserManager<AspNetUserCustom> userManager, SignInManager<AspNetUserCustom> signInManager, IConfiguration configuration,
+                                            IAdminService adminService, IUserService userService, IClientService clientService, ISellerService sellerService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -31,18 +31,18 @@ namespace ConstruAppAPI.Services
             _sellerService = sellerService;
         }
 
-        public async Task<IdentityResult> AddAdminAsync([FromBody] UserAdminDTO userAdmin)
+        public async Task<IdentityResult> AddAdminAsync(UserAdminDTO userAdmin)
         {
-            var email = await _userManager.FindByEmailAsync(userAdmin.Email);
+            AspNetUserCustom email = await _userManager.FindByEmailAsync(userAdmin.Email);
 
-            if (email != null) return IdentityResult.Failed(new IdentityError { Description = "Erro de e-mail"});
+            if (email != null) return IdentityResult.Failed(new IdentityError { Description = "Erro de e-mail" });
 
-            var newUser = _userService.GenereteNewUserAdmin(userAdmin);
+            AspNetUserCustom newUser = _userService.GenereteNewUserAdmin(userAdmin);
             try
             {
-                var resultUser = await _userManager.CreateAsync(newUser, userAdmin.Password);
-                var resultAdmin = await _adminService.CreateAdminAsync(newUser, userAdmin);
-                
+                IdentityResult resultUser = await _userManager.CreateAsync(newUser, userAdmin.Password);
+                UserAdmin resultAdmin = await _adminService.CreateAdminAsync(newUser, userAdmin);
+
                 return IdentityResult.Success;
             }
             catch (Exception error)
@@ -53,17 +53,17 @@ namespace ConstruAppAPI.Services
             }
         }
 
-        public async Task<IdentityResult> AddClientAsync([FromBody] UserClientDTO userClient)
+        public async Task<IdentityResult> AddClientAsync(UserClientDTO userClient)
         {
-            var email = await _userManager.FindByEmailAsync(userClient.Email);
+            AspNetUserCustom email = await _userManager.FindByEmailAsync(userClient.Email);
 
             if (email != null) return IdentityResult.Failed(new IdentityError { Description = "Erro de e-mail" });
 
-            var newUser = _userService.GenereteNewUserClient(userClient);
+            AspNetUserCustom newUser = _userService.GenereteNewUserClient(userClient);
             try
             {
-                var resultUser = await _userManager.CreateAsync(newUser, userClient.Password);
-                var resultClient = await _clientService.CreateClientAsync(newUser, userClient);
+                IdentityResult resultUser = await _userManager.CreateAsync(newUser, userClient.Password);
+                UserClient resultClient = await _clientService.CreateClientAsync(newUser, userClient);
 
                 return IdentityResult.Success;
             }
@@ -77,15 +77,15 @@ namespace ConstruAppAPI.Services
 
         public async Task<IdentityResult> AddSellerAsync([FromBody] UserSellerDTO userSeller)
         {
-            var email = await _userManager.FindByEmailAsync(userSeller.Email);
+            AspNetUserCustom email = await _userManager.FindByEmailAsync(userSeller.Email);
 
             if (email != null) return IdentityResult.Failed(new IdentityError { Description = "Erro de e-mail" });
 
-            var newUser = _userService.GenereteNewUserSeller(userSeller);
+            AspNetUserCustom newUser = _userService.GenereteNewUserSeller(userSeller);
             try
             {
-                var resultUser = await _userManager.CreateAsync(newUser, userSeller.Password);
-                var resultSeller = await _sellerService.CreateSellerAsync(newUser, userSeller);
+                IdentityResult resultUser = await _userManager.CreateAsync(newUser, userSeller.Password);
+                UserSeller resultSeller = await _sellerService.CreateSellerAsync(newUser, userSeller);
 
                 return IdentityResult.Success;
             }
@@ -99,48 +99,64 @@ namespace ConstruAppAPI.Services
 
         public async Task<UserToken> LoginAsync([FromBody] AspNetUserCustomDTO userInfo)
         {
-            AspNetUserCustom userLogin;
-
-            if (userInfo.UserName != null)
-                userLogin = await _userManager.FindByNameAsync(userInfo.UserName);
-            else
-                userLogin = await _userManager.FindByEmailAsync(userInfo.Email);
-
-            // Verificar se as credenciais são válidas
-            //var user = await _userManager.FindByNameAsync(userInfo.UserName);
-            //var email = await _userManager.FindByEmailAsync(userInfo.Email);
-            var result = await _signInManager.CheckPasswordSignInAsync(userLogin, userInfo.Password, lockoutOnFailure: false);
-            
-            if (userLogin == null || !result.Succeeded)
+            try
             {
-                return null;
+                AspNetUserCustom userLogin;
+
+                // Verificar se as credenciais são válidas
+                if (userInfo.UserName != null)
+                    userLogin = await _userManager.FindByNameAsync(userInfo.UserName);
+                else
+                    userLogin = await _userManager.FindByEmailAsync(userInfo.Email);
+
+                var result = await _signInManager.CheckPasswordSignInAsync(userLogin, userInfo.Password, lockoutOnFailure: false);
+
+                if (userLogin == null || !result.Succeeded)
+                {
+                    return null;
+                }
+
+                // Gerar o token JWT
+                UserToken token = GenerateToken(userInfo);
+
+                return token;
             }
-
-            // Gerar o token JWT
-            var token = GenerateToken(userInfo);
-
-            return token;
+            catch (Exception error)
+            {
+                throw new Exception(error.Message);
+            }
         }
 
         private UserToken GenerateToken(AspNetUserCustomDTO userInfo)
         {
-            //define declarações do usuário
-            var claims = new[]
+            string strLoginUser;
+
+            if (string.IsNullOrEmpty(userInfo.Email))
             {
-                     new Claim(JwtRegisteredClaimNames.UniqueName, (userInfo.Email is null ? userInfo.UserName : userInfo.Email)),
+                strLoginUser = userInfo.UserName.ToLower();
+            }
+            else
+            {
+                strLoginUser = userInfo.Email.ToLower();
+            }
+
+            //define declarações do usuário
+            Claim[] claims = new[]
+            {
+                     new Claim(JwtRegisteredClaimNames.UniqueName, strLoginUser),
                      new Claim("meuPet", "gordão"),
                      new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                  };
 
             //gera uma chave com base em um algoritmo simetrico
-            var key = new SymmetricSecurityKey(
+            SymmetricSecurityKey key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
             //gera a assinatura digital do token usando o algoritmo Hmac e a chave privada
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             //Tempo de expiracão do token.
-            var expires = _configuration["TokenConfiguration:ExpireHours"];
-            var expiration = DateTime.UtcNow.AddHours(double.Parse(expires));
+            string expires = _configuration["TokenConfiguration:ExpireHours"];
+            DateTime expiration = DateTime.UtcNow.AddHours(double.Parse(expires));
 
             // classe que representa um token JWT e gera o token
             JwtSecurityToken token = new JwtSecurityToken(

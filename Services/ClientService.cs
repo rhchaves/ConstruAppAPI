@@ -27,19 +27,19 @@ namespace ConstruAppAPI.Services
                 _context.UserClientRepository.AddItem(newClient);
                 await _context.CommitAsync();
 
-                var result = await AttributeClaimsAsync(user, client.TypeClient);
+                IdentityResult result = await AttributeClaimsAsync(user, client.TypeClient);
 
                 return newClient;
             }
-            catch (Exception ex)
+            catch (Exception error)
             {
-                return null;
+                throw new Exception("Ocorreu um erro ao criar o cliente: " + error.Message);
             }
         }
 
-        private UserClient GenereteNewClient(AspNetUserCustom user, UserClientDTO client)
+        private static UserClient GenereteNewClient(AspNetUserCustom user, UserClientDTO client)
         {
-            var newClient = new UserClient
+            UserClient newClient = new UserClient
             {
                 AspNetUserId = user.Id,
                 UserClientId = user.Id,
@@ -87,7 +87,7 @@ namespace ConstruAppAPI.Services
                 };
             }
 
-            var result = await _userManager.AddClaimsAsync(user, claims);
+            IdentityResult result = await _userManager.AddClaimsAsync(user, claims);
 
             return result;
         }

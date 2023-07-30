@@ -3,7 +3,6 @@ using ConstruAppAPI.Models;
 using ConstruAppAPI.Repository.Interfaces;
 using ConstruAppAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace ConstruAppAPI.Services
@@ -28,19 +27,19 @@ namespace ConstruAppAPI.Services
                 _context.UserAdminRepository.AddItem(newAdmin);
                 await _context.CommitAsync();
 
-                var result = await AttributeClaimsAsync(user, admin.TypeAdmin);
-                
+                IdentityResult result = await AttributeClaimsAsync(user, admin.TypeAdmin);
+
                 return newAdmin;
             }
-            catch (Exception ex)
+            catch (Exception error)
             {
-                return null;
+                throw new Exception("Ocorreu um erro ao criar o admin: " + error.Message);
             }
         }
 
-        private UserAdmin GenereteNewAdmin(AspNetUserCustom user, UserAdminDTO admin)
+        private static UserAdmin GenereteNewAdmin(AspNetUserCustom user, UserAdminDTO admin)
         {
-            var newAdmin = new UserAdmin
+            UserAdmin newAdmin = new UserAdmin
             {
                 AspNetUserId = user.Id,
                 UserAdminId = user.Id,
@@ -95,7 +94,7 @@ namespace ConstruAppAPI.Services
                     new Claim("master_admin", "administrador_principal"),
                     new Claim(ClaimTypes.Role, "admin_role")
                 };
-                
+
             }
             else
             {
@@ -106,7 +105,7 @@ namespace ConstruAppAPI.Services
                 };
             }
 
-            var result = await _userManager.AddClaimsAsync(user, claims);
+            IdentityResult result = await _userManager.AddClaimsAsync(user, claims);
 
             return result;
         }

@@ -11,6 +11,7 @@ namespace ConstruAppAPI.Repository
         private PurchaseOrderRepository _purchaseOrderRepository;
         private PurchaseOrderItemRepository _purchaseOrderItemRepository;
         private ShoppingCartRepository _shoppingCartRepository;
+        private ShoppingCartItemRepository _shoppingCartItemRepository;
         private UserAdminRepository _userAdminRepository;
         private UserClientRepository _userClientRepository;
         private UserSellerRepository _userSellerRepository;
@@ -43,6 +44,11 @@ namespace ConstruAppAPI.Repository
         public IShoppingCartRepository ShoppingCartRepository
         {
             get { return _shoppingCartRepository = _shoppingCartRepository ?? new ShoppingCartRepository(_context); }
+        }
+
+        public IShoppingCartItemRepository ShoppingCartItemRepository
+        {
+            get { return _shoppingCartItemRepository = _shoppingCartItemRepository ?? new ShoppingCartItemRepository(_context); }
         }
 
         public IUserAdminRepository UserAdminRepository

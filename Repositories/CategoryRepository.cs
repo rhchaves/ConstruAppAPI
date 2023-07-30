@@ -1,19 +1,28 @@
 ﻿using ConstruAppAPI.Models;
+using ConstruAppAPI.Pagination;
 using ConstruAppAPI.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ConstruAppAPI.Repository
 {
     public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
-        public CategoryRepository(ModelContext context) : base(context)
+        public CategoryRepository(ModelContext context) : base(context) { }
+
+        public async Task<PagedList<Category>> GetCategoriesByPagesAsync(QueryStringParameters itemParameters)
         {
+            return await PagedList<Category>.ToPagedListAsync(GetItem().Where(p => p.DeletedRegister == null).OrderBy(p => p.Name), itemParameters.PageNumber, itemParameters.PageSize);
         }
 
-        //public Task<Category> FindCategoryAsync(string name)
-        //{
-        //    var category = GetItem(cat => cat.Label.Contains(categoryName)).ToList();
-        //    return category;
-        //}
+        public async Task<IEnumerable<Category>> GetCategoriesProductsAsync()
+        {
+            return await GetItem().Where(p => p.DeletedRegister == null).Include(x => x.Products).ToListAsync();
+        }
+
+        public async Task<List<Category>> FindCategoryAsync(string name)
+        {
+            return await GetItem().Where(p => p.Label.ToUpper().Contains(name.ToUpper()) && p.Status == 1 && p.DeletedRegister == null).ToListAsync();
+        }
 
     }
 }
