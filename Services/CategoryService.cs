@@ -18,11 +18,11 @@ namespace ConstruAppAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<List<CategoryDTO>> ListAllCategoriesAsync()
+        public async Task<List<CategoryDTO>> ListCategoriesByNameAsync(int intQtdCategories, bool blnOrderDesc)
         {
             try
             {
-                List<Category> categories = await _context.CategoryRepository.GetItem().Where(p => p.DeletedRegister == null && p.Status == 1).Take(5).ToListAsync();
+                List<Category> categories = await _context.CategoryRepository.ListCategoriesByNameAsync(intQtdCategories, blnOrderDesc);
                 List<CategoryDTO> categoriesDto = _mapper.Map<List<CategoryDTO>>(categories);
                 return categoriesDto;
             }
@@ -36,7 +36,7 @@ namespace ConstruAppAPI.Services
         {
             try
             {
-                Category category = await _context.CategoryRepository.GetItemByIdAsync(p => p.CategoryId == id && p.DeletedRegister == null);
+                Category category = await _context.CategoryRepository.GetActiveByIdAsync(id);
                 CategoryDTO categoryDto = _mapper.Map<CategoryDTO>(category);
                 return categoryDto;
             }
@@ -125,13 +125,11 @@ namespace ConstruAppAPI.Services
             {
                 if (item.CategoryId != id) return null;
 
-                Category existingCategory = await _context.CategoryRepository.GetItemByIdAsync(p => p.CategoryId == id && p.DeletedRegister == null);
+                Category existingCategory = await _context.CategoryRepository.GetActiveDesactiveByIdAsync(id);
 
                 if (existingCategory == null) return null;
 
                 existingCategory.ImageUri = item.ImageUri;
-                existingCategory.Status = item.Status;
-                existingCategory.UpdateStatus = DateTime.Now;
                 existingCategory.UpdateRegister = DateTime.Now;
 
                 _context.CategoryRepository.UpdateItem(existingCategory);
@@ -151,7 +149,7 @@ namespace ConstruAppAPI.Services
         {
             try
             {
-                Category category = await _context.CategoryRepository.GetItemByIdAsync(p => p.CategoryId == id && p.DeletedRegister == null);
+                Category category = await _context.CategoryRepository.GetActiveDesactiveByIdAsync(id);
 
                 if (category == null) return null;
 
@@ -178,9 +176,9 @@ namespace ConstruAppAPI.Services
         {
             try
             {
-                Category category = await _context.CategoryRepository.GetItemByIdAsync(p => p.CategoryId == id && p.DeletedRegister == null);
+                Category category = await _context.CategoryRepository.GetAnyCategoryByIdAsync(id);
 
-                if (category == null) return null;
+                if (category == null || category.DeletedRegister != null) return null;
 
                 category.Status = 0;
                 category.DeletedRegister = DateTime.Now;

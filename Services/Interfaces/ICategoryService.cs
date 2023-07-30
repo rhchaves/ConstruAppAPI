@@ -6,7 +6,7 @@ namespace ConstruAppAPI.Services.Interfaces
 {
     public interface ICategoryService
     {
-        Task<List<CategoryDTO>> ListAllCategoriesAsync();
+        Task<List<CategoryDTO>> ListCategoriesByNameAsync(int intQtdCategories, bool blnOrderDesc);
         Task<CategoryDTO> GetCategoryByIdAsync(int id);
         Task<(List<CategoryDTO>, object)> GetCategoriesByPagesAsync(QueryStringParameters itemsParameters);
         Task<List<CategoryDTO>> FindCategoryAsync(string name);

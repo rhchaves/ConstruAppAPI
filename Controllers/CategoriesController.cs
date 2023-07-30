@@ -20,12 +20,12 @@ namespace ConstruAppAPI.Controllers
         }
 
         // GET: api/Categories
-        [HttpGet]
-        public async Task<IActionResult> GetAllCategoriesAsync()
+        [HttpGet("name {intQtdCategories:int:min(1)}")]
+        public async Task<IActionResult> GetCategoriesByNameAsync(int intQtdCategories, bool blnOrderDesc)
         {
             try
             {
-                List<CategoryDTO> categories = await _categoryService.ListAllCategoriesAsync();
+                List<CategoryDTO> categories = await _categoryService.ListCategoriesByNameAsync(intQtdCategories, blnOrderDesc);
                 if (categories == null || categories.Count() == 0)
                     return NotFound("Não foi encontrado nenhuma categoria");
                 return Ok(categories);
